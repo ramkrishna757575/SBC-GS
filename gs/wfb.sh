@@ -51,6 +51,9 @@ if [ "$fpv_firmware_type" == "ap" ]; then
 	ip addr add "$ap_wifi_ip" dev ${wfb_nics%% *}
 	# dhclient ${wfb_nics%% *}
 	
+	# Enable multicast routing for USB tethering support
+	ip route add 224.0.0.0/4 dev br0 2>/dev/null || true
+	
 	# Set up stream forwarding from drone AP to multicast for USB tethering support
 	# Forward video stream
 	systemd-run --unit=ap_video_forward socat \

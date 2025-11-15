@@ -69,6 +69,7 @@ Name=br0
 Address=${br0_fixed_ip}
 Address=${br0_fixed_ip2}
 DHCP=yes
+MulticastRouting=yes
 EOF
 
 [ -f /etc/systemd/network/eth0.network ] || cat > /etc/systemd/network/eth0.network << EOF
