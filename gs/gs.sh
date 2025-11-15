@@ -70,10 +70,10 @@ if [ "$video_on_boot" == "yes" ]; then
 			--property=WorkingDirectory=/home/radxa/ruby \
 			/home/radxa/ruby/ruby_start
 	else
-		# add route to 224.0.0.1
+		# add route to 224.0.0.1 (for wfb and ap modes)
 		ip ro add 224.0.0.0/4 dev br0
 
-		# Start wfb
+		# Start wfb or ap mode
 		if [ "$wfb_mode" == "standalone" ]; then
 			echo "start wfb in standalone mode"
 			# Bind mount the wifibroadcast configuration file

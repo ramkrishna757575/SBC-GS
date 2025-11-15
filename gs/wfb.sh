@@ -48,8 +48,20 @@ set_txpower() {
 if [ "$fpv_firmware_type" == "ap" ]; then
 	wpa_passphrase "$ap_wifi_ssid" "$ap_wifi_password" > /run/wpa_supplicant.conf
 	wpa_supplicant -B -i ${wfb_nics%% *} -c /run/wpa_supplicant.conf
-	ip addr add "192.168.0.10/24" dev ${wfb_nics%% *}
+	ip addr add "$ap_wifi_ip" dev ${wfb_nics%% *}
 	# dhclient ${wfb_nics%% *}
+	
+	# Set up stream forwarding from drone AP to multicast for USB tethering support
+	# Forward video stream
+	systemd-run --unit=ap_video_forward socat \
+		UDP4-RECV:${ap_video_port},reuseaddr,fork \
+		UDP4-SENDTO:${wfb_outgoing_ip}:${wfb_outgoing_port_video}
+	
+	# Forward mavlink stream
+	systemd-run --unit=ap_mavlink_forward socat \
+		UDP4-RECV:${ap_mavlink_port},reuseaddr,fork \
+		UDP4-SENDTO:${wfb_outgoing_ip}:${wfb_outgoing_port_mavlink}
+	
 	exit 0
 elif [ "$wfb_mode" == "cluster" ]; then
 	# stop local_node.service if exist
